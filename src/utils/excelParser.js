@@ -89,7 +89,18 @@ export const exportToRekapUsulan = (selectedEmployees) => {
     ];
   });
 
-  const titleRow = ['Periode :  ' + new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' })];
+  const monthNames = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  let periodString = new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+  
+  if (selectedEmployees.length > 0 && selectedEmployees[0]['Bulan'] && selectedEmployees[0]['Tahun']) {
+    const bulanNum = parseInt(selectedEmployees[0]['Bulan']);
+    const tahunNum = selectedEmployees[0]['Tahun'];
+    if (!isNaN(bulanNum) && bulanNum >= 1 && bulanNum <= 12) {
+      periodString = `${monthNames[bulanNum]} ${tahunNum}`;
+    }
+  }
+
+  const titleRow = ['Periode : ' + periodString];
 
   const finalData = [
     titleRow,
