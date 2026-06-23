@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 export const parseEPresensi = async (file) => {
   return new Promise((resolve, reject) => {
@@ -10,17 +10,13 @@ export const parseEPresensi = async (file) => {
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
 
-        // Read the worksheet as a 2D array
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         
-        // E-Presensi format usually has headers on the second row (index 1)
-        // Row 0 is the "export-skp..." metadata row
         const headers = jsonData[1];
         if (!headers || !headers.includes('Nama Pegawai')) {
           throw new Error('Format file tidak dikenali. Pastikan ini adalah file E-Presensi DKP Jatim.');
         }
 
-        // Map data based on headers
         const parsedData = jsonData.slice(2).map((row) => {
           const rowObj = {};
           headers.forEach((header, index) => {
@@ -29,7 +25,7 @@ export const parseEPresensi = async (file) => {
             }
           });
           return rowObj;
-        }).filter(row => row['Nama Pegawai']); // Only keep rows with names
+        }).filter(row => row['Nama Pegawai']); 
 
         resolve(parsedData);
       } catch (err) {
@@ -45,11 +41,11 @@ export const exportToRekapUsulan = (selectedEmployees) => {
   // Define headers based on Rekap Usulan EOM
   const headersRow2 = [
     'No', 'Usulan Nama', 'NIP', 'Status ASN', 'Jabatan', 'Unit Kerja', 
-    'Kategori Pegawai Terbaik', 'PIC', 'Kriteria Penilaian', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
+    'Kategori Pegawai Terbaik', 'PIC', 'Kriteria Penilaian', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
   ];
   
   const headersRow3 = [
-    '', '', '', '', '', '', '', '', 'Rekap Kehadiran sesuai E Presensi (hari)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Kelengkapan dan Kesesuaian Bukti (evidence) Kinerja', '', '', '', ''
+    '', '', '', '', '', '', '', '', 'Rekap Kehadiran sesuai E Presensi (hari)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Kelengkapan dan Kesesuaian Bukti (evidence) Kinerja', '', '', ''
   ];
 
   const headersRow4 = [
@@ -58,21 +54,20 @@ export const exportToRekapUsulan = (selectedEmployees) => {
     'Tidak Senam', 'Tidak Apel', 'Ijin Dg Ket (di potong)', 'Lupa Absen', 
     'Dihitung Terlambat Menit (Flexi Working)', 'Frekuensi Terlambat (Hari)', 
     'Toleransi Terlambat 5 Hari (menit)', 'Cuti', 'Tidak Masuk Tanpa Keterangan', 
-    '', 'Total Nilai Predikat SKP', 'Durasi Dihitung', 'Skor SKP', ''
+    '', 'Total Nilai Predikat SKP', 'Durasi Dihitung', ''
   ];
 
-  // Map selected employees to the format
   const dataRows = selectedEmployees.map((emp, index) => {
     return [
-      index + 1, // No
+      index + 1, 
       emp['Nama Pegawai'] || '',
-      emp['NIP'] ? emp['NIP'].toString().replace(/[`']/g, '') : '', // Clean NIP
+      emp['NIP'] ? emp['NIP'].toString().replace(/[`']/g, '') : '', 
       emp['Status'] || '',
-      emp['kelas jabatan'] || '', // Fallback for Jabatan, wait user said leave blank if not sure, let's try 'OPD' string or leave blank. Let's just put 'kelas jabatan'.
-      emp['OPD'] || '', // Unit Kerja
-      '', // Kategori Pegawai Terbaik
-      '', // PIC
-      emp['kehadiran'] || 0, // Kehadiran
+      emp['kelas jabatan'] || '', 
+      emp['OPD'] || '', 
+      '', 
+      '', 
+      emp['kehadiran'] || 0, 
       emp['DL/Ijin/Cuti'] || 0,
       emp['tad'] || 0,
       emp['tap'] || 0,
@@ -87,19 +82,18 @@ export const exportToRekapUsulan = (selectedEmployees) => {
       emp['Toleransi 5 Hari (menit)'] || 0,
       emp['Total Cuti'] || 0,
       emp['2026 - Tidak Masuk Tanpa Keterangan'] || 0,
-      '', // Kelengkapan Bukti (empty)
-      '', // Total Nilai Predikat SKP (empty)
+      '', 
+      '', 
       emp['2026 - Durasi Dihitung'] || '',
-      '', // Skor SKP (empty)
+      '', 
     ];
   });
 
-  // Add the title row
   const titleRow = ['Periode :  ' + new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' })];
 
   const finalData = [
     titleRow,
-    [], // Empty row
+    [], 
     headersRow2,
     headersRow3,
     headersRow4,
@@ -108,7 +102,6 @@ export const exportToRekapUsulan = (selectedEmployees) => {
 
   const ws = XLSX.utils.aoa_to_sheet(finalData);
 
-  // Merging cells for styling
   ws['!merges'] = [
     { s: { r: 2, c: 0 }, e: { r: 4, c: 0 } }, // No
     { s: { r: 2, c: 1 }, e: { r: 4, c: 1 } }, // Usulan Nama
@@ -118,9 +111,50 @@ export const exportToRekapUsulan = (selectedEmployees) => {
     { s: { r: 2, c: 5 }, e: { r: 4, c: 5 } }, // Unit Kerja
     { s: { r: 2, c: 6 }, e: { r: 4, c: 6 } }, // Kategori Pegawai Terbaik
     { s: { r: 2, c: 7 }, e: { r: 4, c: 7 } }, // PIC
-    { s: { r: 2, c: 8 }, e: { r: 2, c: 27 } }, // Kriteria Penilaian
+    { s: { r: 2, c: 8 }, e: { r: 2, c: 26 } }, // Kriteria Penilaian
     { s: { r: 3, c: 8 }, e: { r: 3, c: 22 } }, // Rekap Kehadiran
+    { s: { r: 3, c: 23 }, e: { r: 3, c: 25 } }, // Kelengkapan Bukti (was 23 to 26 before, now removed Skor SKP)
   ];
+
+  // Styling for Headers
+  const headerStyle = {
+    fill: { fgColor: { rgb: "ADD8E6" } }, // Light blue background
+    font: { bold: true, color: { rgb: "000000" } },
+    alignment: { horizontal: "center", vertical: "center", wrapText: true },
+    border: {
+      top: { style: "thin" },
+      bottom: { style: "thin" },
+      left: { style: "thin" },
+      right: { style: "thin" },
+    }
+  };
+
+  // Apply styles to all cells in rows 2, 3, 4 (0-indexed -> 2,3,4)
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let R = 2; R <= 4; ++R) {
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cellAddress = { c: C, r: R };
+      const cellRef = XLSX.utils.encode_cell(cellAddress);
+      
+      if (!ws[cellRef]) {
+        ws[cellRef] = { t: 's', v: '' }; // Create empty cell if undefined to apply style to merged area
+      }
+      ws[cellRef].s = headerStyle;
+    }
+  }
+
+  // Auto-width for columns
+  const colWidths = [
+    { wch: 5 },  // No
+    { wch: 30 }, // Nama
+    { wch: 20 }, // NIP
+    { wch: 15 }, // Status
+    { wch: 20 }, // Jabatan
+    { wch: 40 }, // Unit Kerja
+    { wch: 20 }, // Kategori
+    { wch: 10 }, // PIC
+  ];
+  ws['!cols'] = colWidths;
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Rekap_Usulan");
