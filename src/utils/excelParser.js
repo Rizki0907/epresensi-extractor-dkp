@@ -143,6 +143,31 @@ export const exportToRekapUsulan = (selectedEmployees) => {
     }
   }
 
+  // Styling for Data Rows (Borders only)
+  const dataStyle = {
+    font: { color: { rgb: "000000" } },
+    alignment: { vertical: "center", wrapText: true },
+    border: {
+      top: { style: "thin" },
+      bottom: { style: "thin" },
+      left: { style: "thin" },
+      right: { style: "thin" },
+    }
+  };
+
+  // Apply styles to data rows
+  for (let R = 5; R < 5 + dataRows.length; ++R) {
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cellAddress = { c: C, r: R };
+      const cellRef = XLSX.utils.encode_cell(cellAddress);
+      
+      if (!ws[cellRef]) {
+        ws[cellRef] = { t: 's', v: '' };
+      }
+      ws[cellRef].s = dataStyle;
+    }
+  }
+
   // Auto-width for columns
   const colWidths = [
     { wch: 5 },  // No
