@@ -210,12 +210,17 @@ export const getTopSekretariat = (data) => {
     const hadirB = parseFloat(b['kehadiran']) || 0;
     if (hadirB !== hadirA) return hadirB - hadirA;
 
-    // 2. Alpha (ASC)
-    const alphaA = parseFloat(a['alpha']) || 0;
-    const alphaB = parseFloat(b['alpha']) || 0;
-    if (alphaA !== alphaB) return alphaA - alphaB;
+    // 2. Pelanggaran Berat (ASC) - Alpha, TAD, TAP, Lupa Absen
+    const beratA = (parseFloat(a['alpha']) || 0) + (parseFloat(a['tad']) || 0) + (parseFloat(a['tap']) || 0) + (parseFloat(a['lupaabsen']) || 0);
+    const beratB = (parseFloat(b['alpha']) || 0) + (parseFloat(b['tad']) || 0) + (parseFloat(b['tap']) || 0) + (parseFloat(b['lupaabsen']) || 0);
+    if (beratA !== beratB) return beratA - beratB;
 
-    // 3. Menit Terlambat (ASC)
+    // 3. Pelanggaran Ringan (ASC) - Tidak Apel, Tidak Senam
+    const ringanA = (parseFloat(a['tidak apel']) || 0) + (parseFloat(a['tidak senam']) || 0);
+    const ringanB = (parseFloat(b['tidak apel']) || 0) + (parseFloat(b['tidak senam']) || 0);
+    if (ringanA !== ringanB) return ringanA - ringanB;
+
+    // 4. Menit Terlambat (ASC)
     const telatA = parseFloat(a['menit terlambat']) || 0;
     const telatB = parseFloat(b['menit terlambat']) || 0;
     return telatA - telatB;

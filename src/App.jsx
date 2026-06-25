@@ -406,7 +406,7 @@ function App() {
               </table>
             </div>
             <div className="p-4 border-t border-slate-100 bg-white text-xs text-slate-500 text-center">
-              Daftar ini diurutkan otomatis berdasarkan: 1. Kehadiran terbanyak, 2. Alpha terminim, 3. Keterlambatan terminim.
+              Daftar ini diurutkan hierarkis berdasarkan: 1. Kehadiran Terbanyak, 2. Pelanggaran Berat Terminim (Alpha/TAD/TAP), 3. Pelanggaran Ringan Terminim (Apel/Senam), 4. Keterlambatan Terminim.
             </div>
           </div>
         </div>
