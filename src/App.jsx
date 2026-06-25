@@ -342,15 +342,17 @@ function App() {
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-white sticky top-0 shadow-sm z-10">
                   <tr className="text-slate-600 border-b border-slate-200">
-                    <th className="px-6 py-4 font-bold">Hadir</th>
-                    <th className="px-6 py-4 font-bold">Ijin/Cuti</th>
-                    <th className="px-6 py-4 font-bold">Alpha</th>
-                    <th className="px-6 py-4 font-bold">Lupa Absen</th>
-                    <th className="px-6 py-4 font-bold">TAD</th>
-                    <th className="px-6 py-4 font-bold">TAP</th>
-                    <th className="px-6 py-4 font-bold">Apel</th>
-                    <th className="px-6 py-4 font-bold">Senam</th>
-                    <th className="px-6 py-4 font-bold">Terlambat (Mnt)</th>
+                    <th className="px-6 py-4 font-bold">Peringkat</th>
+                    <th className="px-6 py-4 font-bold">Nama / NIP</th>
+                    <th className="px-6 py-4 font-bold text-center">Hadir</th>
+                    <th className="px-6 py-4 font-bold text-center">Ijin/Cuti</th>
+                    <th className="px-6 py-4 font-bold text-center">Alpha</th>
+                    <th className="px-6 py-4 font-bold text-center">Lupa Absen</th>
+                    <th className="px-6 py-4 font-bold text-center">TAD</th>
+                    <th className="px-6 py-4 font-bold text-center">TAP</th>
+                    <th className="px-6 py-4 font-bold text-center">Tdk Apel</th>
+                    <th className="px-6 py-4 font-bold text-center">Tdk Senam</th>
+                    <th className="px-6 py-4 font-bold text-center">Terlambat</th>
                     <th className="px-6 py-4 font-bold text-center">Aksi</th>
                   </tr>
                 </thead>
