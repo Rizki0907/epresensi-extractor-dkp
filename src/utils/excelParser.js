@@ -41,11 +41,11 @@ export const exportToRekapUsulan = (selectedEmployees) => {
   // Define headers based on Rekap Usulan EOM
   const headersRow2 = [
     'No', 'Usulan Nama', 'NIP', 'Status ASN', 'Jabatan', 'Unit Kerja', 
-    'Kategori Pegawai Terbaik', 'PIC', 'Kriteria Penilaian', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
+    'Kategori Pegawai Terbaik', 'PIC', 'Kriteria Penilaian', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ''
   ];
   
   const headersRow3 = [
-    '', '', '', '', '', '', '', '', 'Rekap Kehadiran sesuai E Presensi (hari)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Kelengkapan dan Kesesuaian Bukti (evidence) Kinerja', '', '', ''
+    '', '', '', '', '', '', '', '', 'Rekap Kehadiran sesuai E Presensi (hari)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Kelengkapan dan Kesesuaian Bukti (evidence) Kinerja', 'Total Nilai Predikat SKP', 'Durasi Dihitung'
   ];
 
   const headersRow4 = [
@@ -54,7 +54,7 @@ export const exportToRekapUsulan = (selectedEmployees) => {
     'Tidak Senam', 'Tidak Apel', 'Ijin Dg Ket (di potong)', 'Lupa Absen', 
     'Dihitung Terlambat Menit (Flexi Working)', 'Frekuensi Terlambat (Hari)', 
     'Toleransi Terlambat 5 Hari (menit)', 'Cuti', 'Tidak Masuk Tanpa Keterangan', 
-    '', 'Total Nilai Predikat SKP', 'Durasi Dihitung', ''
+    '', '', ''
   ];
 
   const dataRows = selectedEmployees.map((emp, index) => {
@@ -85,7 +85,6 @@ export const exportToRekapUsulan = (selectedEmployees) => {
       '', 
       '', 
       emp['2026 - Durasi Dihitung'] || '',
-      '', 
     ];
   });
 
@@ -122,9 +121,11 @@ export const exportToRekapUsulan = (selectedEmployees) => {
     { s: { r: 2, c: 5 }, e: { r: 4, c: 5 } }, // Unit Kerja
     { s: { r: 2, c: 6 }, e: { r: 4, c: 6 } }, // Kategori Pegawai Terbaik
     { s: { r: 2, c: 7 }, e: { r: 4, c: 7 } }, // PIC
-    { s: { r: 2, c: 8 }, e: { r: 2, c: 26 } }, // Kriteria Penilaian
+    { s: { r: 2, c: 8 }, e: { r: 2, c: 25 } }, // Kriteria Penilaian
     { s: { r: 3, c: 8 }, e: { r: 3, c: 22 } }, // Rekap Kehadiran
-    { s: { r: 3, c: 23 }, e: { r: 3, c: 25 } }, // Kelengkapan Bukti (was 23 to 26 before, now removed Skor SKP)
+    { s: { r: 3, c: 23 }, e: { r: 4, c: 23 } }, // Kelengkapan
+    { s: { r: 3, c: 24 }, e: { r: 4, c: 24 } }, // SKP
+    { s: { r: 3, c: 25 }, e: { r: 4, c: 25 } }, // Durasi
   ];
 
   // Styling for Headers

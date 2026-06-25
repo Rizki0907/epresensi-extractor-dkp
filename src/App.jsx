@@ -11,11 +11,10 @@ function App() {
   const [fileName, setFileName] = useState(null);
   const [error, setError] = useState(null);
   const [showAbout, setShowAbout] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
+  const processFile = async (file) => {
     if (!file) return;
-
     setIsParsing(true);
     setError(null);
     try {
@@ -27,6 +26,26 @@ function App() {
     } finally {
       setIsParsing(false);
     }
+  };
+
+  const handleFileUpload = (e) => {
+    processFile(e.target.files[0]);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    processFile(e.dataTransfer.files[0]);
   };
 
   const filteredData = useMemo(() => {
@@ -83,7 +102,12 @@ function App() {
 
         {/* Upload Section */}
         {!fileName ? (
-          <div className="bg-white p-10 rounded-3xl shadow-sm border border-slate-200 text-center hover:shadow-md transition-shadow">
+          <div 
+            className={`p-10 rounded-3xl shadow-sm border-2 text-center transition-all ${isDragging ? 'bg-blue-50 border-blue-400 border-dashed scale-[1.02]' : 'bg-white border-slate-200 hover:shadow-md border-solid'}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
             <input 
               type="file" 
               id="file-upload" 
@@ -95,12 +119,12 @@ function App() {
               htmlFor="file-upload"
               className="cursor-pointer flex flex-col items-center space-y-6"
             >
-              <div className="p-6 bg-blue-50 rounded-full border-2 border-dashed border-blue-300 group-hover:bg-blue-100 transition-colors">
-                <Upload className="w-10 h-10 text-blue-500" />
+              <div className={`p-6 rounded-full border-2 border-dashed transition-colors ${isDragging ? 'bg-blue-200 border-blue-500' : 'bg-blue-50 border-blue-300 group-hover:bg-blue-100'}`}>
+                <Upload className={`w-10 h-10 ${isDragging ? 'text-blue-700' : 'text-blue-500'}`} />
               </div>
               <div>
-                <p className="text-xl font-bold text-blue-700">Unggah File E-Presensi BKD</p>
-                <p className="text-slate-500 mt-2 max-w-sm mx-auto">Format yang didukung: Excel (.xlsx). Pastikan baris ke-2 berisi header asli dari E-Presensi.</p>
+                <p className={`text-xl font-bold ${isDragging ? 'text-blue-800' : 'text-blue-700'}`}>Unggah File E-Presensi BKD</p>
+                <p className="text-slate-500 mt-2 max-w-sm mx-auto">Seret file ke sini atau klik untuk memilih file Excel (.xlsx). Pastikan baris ke-2 berisi header asli.</p>
               </div>
             </label>
             {isParsing && <p className="mt-6 text-blue-600 animate-pulse font-medium">Sedang membaca dan memetakan data sel...</p>}
