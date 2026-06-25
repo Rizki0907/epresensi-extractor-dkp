@@ -345,14 +345,17 @@ function App() {
                     <th className="px-6 py-4 font-bold">Peringkat</th>
                     <th className="px-6 py-4 font-bold">Nama / NIP</th>
                     <th className="px-6 py-4 font-bold">Hadir</th>
+                    <th className="px-6 py-4 font-bold">Plg. Berat</th>
+                    <th className="px-6 py-4 font-bold">Plg. Ringan</th>
                     <th className="px-6 py-4 font-bold">Terlambat</th>
-                    <th className="px-6 py-4 font-bold">Alpha</th>
                     <th className="px-6 py-4 font-bold text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {getTopSekretariat(data).map((emp, idx) => {
                     const isSelected = selectedEmployees.some(s => s['NIP'] === emp['NIP'] && s['Nama Pegawai'] === emp['Nama Pegawai']);
+                    const berat = (parseFloat(emp['alpha']) || 0) + (parseFloat(emp['tad']) || 0) + (parseFloat(emp['tap']) || 0) + (parseFloat(emp['lupaabsen']) || 0);
+                    const ringan = (parseFloat(emp['tidak apel']) || 0) + (parseFloat(emp['tidak senam']) || 0);
                     return (
                       <tr key={idx} className="hover:bg-blue-50/50 transition-colors bg-white">
                         <td className="px-6 py-4">
@@ -368,10 +371,19 @@ function App() {
                           <span className="bg-green-100 text-green-700 px-2.5 py-1 rounded-md font-bold text-xs">{emp['kehadiran'] || 0} Hari</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-slate-600">{emp['menit terlambat'] || 0} Menit</span>
+                          <div className="flex flex-col">
+                            <span className={`font-bold ${berat > 0 ? 'text-red-600' : 'text-slate-700'}`}>{berat} Kali</span>
+                            {berat > 0 && <span className="text-[10px] text-slate-400">Alpha/TAD/TAP/Lupa</span>}
+                          </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-slate-600">{emp['alpha'] || 0} Hari</span>
+                          <div className="flex flex-col">
+                            <span className={`font-bold ${ringan > 0 ? 'text-orange-500' : 'text-slate-700'}`}>{ringan} Kali</span>
+                            {ringan > 0 && <span className="text-[10px] text-slate-400">Apel/Senam</span>}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-slate-600">{emp['menit terlambat'] || 0} Menit</span>
                         </td>
                         <td className="px-6 py-4 text-center">
                           <button
@@ -397,7 +409,7 @@ function App() {
                   })}
                   {getTopSekretariat(data).length === 0 && (
                     <tr>
-                      <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                      <td colSpan="7" className="px-6 py-12 text-center text-slate-500">
                         Tidak ada data pegawai Sekretariat ditemukan.
                       </td>
                     </tr>
