@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Upload, Search, Download, Trash2, FileSpreadsheet, CheckCircle2, UserPlus, Info, HelpCircle, X } from 'lucide-react';
-import { parseEPresensi, exportToRekapUsulan } from './utils/excelParser';
+import { Upload, Search, Download, Trash2, FileSpreadsheet, CheckCircle2, UserPlus, Info, HelpCircle, X, Trophy } from 'lucide-react';
+import { parseEPresensi, exportToRekapUsulan, getTopSekretariat } from './utils/excelParser';
 import logoDKP from './assets/logo_DKP.png';
 
 function App() {
@@ -12,6 +12,7 @@ function App() {
   const [error, setError] = useState(null);
   const [showAbout, setShowAbout] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [showSekretariatModal, setShowSekretariatModal] = useState(false);
 
   const processFile = async (file) => {
     if (!file) return;
@@ -158,15 +159,25 @@ function App() {
 
                 <div className="mt-6 relative">
                   <label className="text-sm font-bold text-slate-700 mb-2 block">Pencarian Pegawai</label>
-                  <div className="relative">
-                    <Search className="w-5 h-5 absolute left-4 top-3 text-slate-400" />
-                    <input 
-                      type="text" 
-                      className="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
-                      placeholder="Ketik Nama atau NIP pegawai..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <Search className="w-5 h-5 absolute left-4 top-3 text-slate-400" />
+                      <input 
+                        type="text" 
+                        className="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="Ketik Nama atau NIP pegawai..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      onClick={() => setShowSekretariatModal(true)}
+                      className="flex items-center justify-center gap-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 px-4 py-3 rounded-xl font-bold transition-colors whitespace-nowrap"
+                      title="Lihat Top Absen Sekretariat"
+                    >
+                      <Trophy className="w-5 h-5" />
+                      <span className="hidden xl:inline">Top Sekretariat</span>
+                    </button>
                   </div>
 
                   {/* Search Results Dropdown */}
@@ -306,6 +317,96 @@ function App() {
               >
                 Tutup Panduan
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sekretariat Modal */}
+      {showSekretariatModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden flex flex-col h-[80vh]">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-amber-50">
+              <h3 className="text-xl font-bold text-amber-800 flex items-center gap-2">
+                <Trophy className="w-6 h-6 text-amber-600" />
+                Rekomendasi Top Absen Sekretariat
+              </h3>
+              <button 
+                onClick={() => setShowSekretariatModal(false)}
+                className="p-2 hover:bg-amber-200 rounded-full transition-colors text-amber-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-0 bg-slate-50 custom-scrollbar">
+              <table className="w-full text-left text-sm whitespace-nowrap">
+                <thead className="bg-white sticky top-0 shadow-sm z-10">
+                  <tr className="text-slate-600 border-b border-slate-200">
+                    <th className="px-6 py-4 font-bold">Peringkat</th>
+                    <th className="px-6 py-4 font-bold">Nama / NIP</th>
+                    <th className="px-6 py-4 font-bold">Hadir</th>
+                    <th className="px-6 py-4 font-bold">Terlambat</th>
+                    <th className="px-6 py-4 font-bold">Alpha</th>
+                    <th className="px-6 py-4 font-bold text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {getTopSekretariat(data).map((emp, idx) => {
+                    const isSelected = selectedEmployees.some(s => s['NIP'] === emp['NIP'] && s['Nama Pegawai'] === emp['Nama Pegawai']);
+                    return (
+                      <tr key={idx} className="hover:bg-blue-50/50 transition-colors bg-white">
+                        <td className="px-6 py-4">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${idx < 3 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}`}>
+                            {idx + 1}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-slate-900">{emp['Nama Pegawai']}</p>
+                          <p className="text-xs text-slate-500 mt-0.5">{emp['NIP']} • {emp['kelas jabatan'] || '-'}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="bg-green-100 text-green-700 px-2.5 py-1 rounded-md font-bold text-xs">{emp['kehadiran'] || 0} Hari</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-slate-600">{emp['menit terlambat'] || 0} Menit</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="text-slate-600">{emp['alpha'] || 0} Hari</span>
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <button
+                            onClick={() => {
+                              if (!isSelected) handleSelect(emp);
+                            }}
+                            disabled={isSelected}
+                            className={`px-4 py-2 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-2 mx-auto ${isSelected ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
+                          >
+                            {isSelected ? (
+                              <>
+                                <CheckCircle2 className="w-4 h-4" /> Ditambahkan
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus className="w-4 h-4" /> Tambah
+                              </>
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {getTopSekretariat(data).length === 0 && (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                        Tidak ada data pegawai Sekretariat ditemukan.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            <div className="p-4 border-t border-slate-100 bg-white text-xs text-slate-500 text-center">
+              Daftar ini diurutkan otomatis berdasarkan: 1. Kehadiran terbanyak, 2. Alpha terminim, 3. Keterlambatan terminim.
             </div>
           </div>
         </div>

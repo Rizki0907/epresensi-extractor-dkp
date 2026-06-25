@@ -198,3 +198,26 @@ export const exportToRekapUsulan = (selectedEmployees) => {
   
   XLSX.writeFile(wb, "Hasil_Rekap_Usulan_EOM.xlsx");
 };
+
+export const getTopSekretariat = (data) => {
+  const sekretariatData = data.filter(emp => 
+    emp['OPD'] && emp['OPD'].toLowerCase().includes('sekretariat')
+  );
+
+  return sekretariatData.sort((a, b) => {
+    // 1. Kehadiran (DESC)
+    const hadirA = parseFloat(a['kehadiran']) || 0;
+    const hadirB = parseFloat(b['kehadiran']) || 0;
+    if (hadirB !== hadirA) return hadirB - hadirA;
+
+    // 2. Alpha (ASC)
+    const alphaA = parseFloat(a['alpha']) || 0;
+    const alphaB = parseFloat(b['alpha']) || 0;
+    if (alphaA !== alphaB) return alphaA - alphaB;
+
+    // 3. Menit Terlambat (ASC)
+    const telatA = parseFloat(a['menit terlambat']) || 0;
+    const telatB = parseFloat(b['menit terlambat']) || 0;
+    return telatA - telatB;
+  });
+};
