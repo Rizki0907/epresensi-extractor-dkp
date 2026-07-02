@@ -229,7 +229,7 @@ export const getTopSekretariat = (data) => {
 
 export const exportTopSekretariat = (sekretariatData) => {
   const headers = [
-    'Peringkat', 'Nama Pegawai', 'NIP', 'Jabatan', 'Kehadiran (hari)', 'Ijin/Cuti',
+    'Peringkat', 'Nama Pegawai', 'NIP', 'Status ASN', 'Jabatan', 'Kehadiran (hari)', 'Ijin/Cuti',
     'Alpha', 'Lupa Absen', 'TAD', 'TAP', 'Tidak Apel', 'Tidak Senam', 'Menit Terlambat'
   ];
 
@@ -237,6 +237,7 @@ export const exportTopSekretariat = (sekretariatData) => {
     index + 1,
     emp['Nama Pegawai'] || '',
     emp['NIP'] ? String(emp['NIP']).replace(/[`']/g, '') : '',
+    emp['Status'] || '',
     emp['kelas jabatan'] || '',
     emp['kehadiran'] || 0,
     emp['DL/Ijin/Cuti'] || 0,
@@ -265,7 +266,7 @@ export const exportTopSekretariat = (sekretariatData) => {
   }
 
   const colWidths = [
-    { wch: 10 }, { wch: 35 }, { wch: 20 }, { wch: 20 }, { wch: 15 },
+    { wch: 10 }, { wch: 35 }, { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 15 },
     { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 10 }, { wch: 10 },
     { wch: 12 }, { wch: 12 }, { wch: 15 }
   ];
