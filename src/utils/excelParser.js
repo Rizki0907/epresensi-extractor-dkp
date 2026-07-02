@@ -226,3 +226,52 @@ export const getTopSekretariat = (data) => {
     return telatA - telatB;
   });
 };
+
+export const exportTopSekretariat = (sekretariatData) => {
+  const headers = [
+    'Peringkat', 'Nama Pegawai', 'NIP', 'Jabatan', 'Kehadiran (hari)', 'Ijin/Cuti',
+    'Alpha', 'Lupa Absen', 'TAD', 'TAP', 'Tidak Apel', 'Tidak Senam', 'Menit Terlambat'
+  ];
+
+  const dataRows = sekretariatData.map((emp, index) => [
+    index + 1,
+    emp['Nama Pegawai'] || '',
+    emp['NIP'] ? String(emp['NIP']).replace(/[`']/g, '') : '',
+    emp['kelas jabatan'] || '',
+    emp['kehadiran'] || 0,
+    emp['DL/Ijin/Cuti'] || 0,
+    emp['alpha'] || 0,
+    emp['lupaabsen'] || 0,
+    emp['tad'] || 0,
+    emp['tap'] || 0,
+    emp['tidak apel'] || 0,
+    emp['tidak senam'] || 0,
+    emp['menit terlambat'] || 0
+  ]);
+
+  const finalData = [headers, ...dataRows];
+  const ws = XLSX.utils.aoa_to_sheet(finalData);
+
+  const headerStyle = {
+    fill: { fgColor: { rgb: "F59E0B" } }, // Amber-500
+    font: { bold: true, color: { rgb: "FFFFFF" } },
+    alignment: { horizontal: "center", vertical: "center" }
+  };
+
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = range.s.c; C <= range.e.c; ++C) {
+    const cellRef = XLSX.utils.encode_cell({ c: C, r: 0 });
+    if (ws[cellRef]) ws[cellRef].s = headerStyle;
+  }
+
+  const colWidths = [
+    { wch: 10 }, { wch: 35 }, { wch: 20 }, { wch: 20 }, { wch: 15 },
+    { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 10 }, { wch: 10 },
+    { wch: 12 }, { wch: 12 }, { wch: 15 }
+  ];
+  ws['!cols'] = colWidths;
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Top_Sekretariat");
+  XLSX.writeFile(wb, "Top_Absensi_Sekretariat.xlsx");
+};

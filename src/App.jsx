@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Upload, Search, Download, Trash2, FileSpreadsheet, CheckCircle2, UserPlus, Info, HelpCircle, X, Trophy } from 'lucide-react';
-import { parseEPresensi, exportToRekapUsulan, getTopSekretariat } from './utils/excelParser';
+import { parseEPresensi, exportToRekapUsulan, getTopSekretariat, exportTopSekretariat } from './utils/excelParser';
 import logoDKP from './assets/logo_DKP.png';
 
 function App() {
@@ -331,12 +331,21 @@ function App() {
                 <Trophy className="w-6 h-6 text-amber-600" />
                 Rekomendasi Top Absen Sekretariat
               </h3>
-              <button 
-                onClick={() => setShowSekretariatModal(false)}
-                className="p-2 hover:bg-amber-200 rounded-full transition-colors text-amber-700"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => exportTopSekretariat(getTopSekretariat(data))}
+                  className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors shadow-sm"
+                  title="Download Data Excel"
+                >
+                  <Download className="w-4 h-4" /> Export Excel
+                </button>
+                <button 
+                  onClick={() => setShowSekretariatModal(false)}
+                  className="p-2 hover:bg-amber-200 rounded-full transition-colors text-amber-700"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
             <div className="flex-1 overflow-y-auto p-0 bg-slate-50 custom-scrollbar">
               <table className="w-full text-left text-sm whitespace-nowrap">
