@@ -210,26 +210,25 @@ export const getTopSekretariat = (data) => {
     const hadirB = parseFloat(b['kehadiran']) || 0;
     if (hadirB !== hadirA) return hadirB - hadirA;
 
-    // 2. Pelanggaran Berat (ASC) - Alpha, TAD, TAP, Lupa Absen
-    const beratA = (parseFloat(a['alpha']) || 0) + (parseFloat(a['tad']) || 0) + (parseFloat(a['tap']) || 0) + (parseFloat(a['lupaabsen']) || 0);
-    const beratB = (parseFloat(b['alpha']) || 0) + (parseFloat(b['tad']) || 0) + (parseFloat(b['tap']) || 0) + (parseFloat(b['lupaabsen']) || 0);
-    if (beratA !== beratB) return beratA - beratB;
+    // 2. Penalty Score (ASC)
+    // Bobot: Alpha(1000), LupaAbsen/TAD/TAP(100), Apel/Senam(50), Terlambat(1/menit)
+    const getPenalty = (emp) => {
+      return (parseFloat(emp['alpha']) || 0) * 1000 +
+             (parseFloat(emp['tad']) || 0) * 100 +
+             (parseFloat(emp['tap']) || 0) * 100 +
+             (parseFloat(emp['lupaabsen']) || 0) * 100 +
+             (parseFloat(emp['tidak apel']) || 0) * 50 +
+             (parseFloat(emp['tidak senam']) || 0) * 50 +
+             (parseFloat(emp['menit terlambat']) || 0);
+    };
 
-    // 3. Pelanggaran Ringan (ASC) - Tidak Apel, Tidak Senam
-    const ringanA = (parseFloat(a['tidak apel']) || 0) + (parseFloat(a['tidak senam']) || 0);
-    const ringanB = (parseFloat(b['tidak apel']) || 0) + (parseFloat(b['tidak senam']) || 0);
-    if (ringanA !== ringanB) return ringanA - ringanB;
-
-    // 4. Menit Terlambat (ASC)
-    const telatA = parseFloat(a['menit terlambat']) || 0;
-    const telatB = parseFloat(b['menit terlambat']) || 0;
-    return telatA - telatB;
+    return getPenalty(a) - getPenalty(b);
   });
 };
 
 export const exportTopSekretariat = (sekretariatData) => {
   const headers = [
-    'Peringkat', 'Nama Pegawai', 'NIP', 'Status ASN', 'Jabatan', 'Kehadiran (hari)', 'Ijin/Cuti',
+    'Peringkat', 'Nama Pegawai', 'NIP', 'Status ASN', 'Jabatan', 'Unit Kerja', 'Kehadiran (hari)', 'Ijin/Cuti',
     'Alpha', 'Lupa Absen', 'TAD', 'TAP', 'Tidak Apel', 'Tidak Senam', 'Menit Terlambat'
   ];
 
@@ -239,6 +238,7 @@ export const exportTopSekretariat = (sekretariatData) => {
     emp['NIP'] ? String(emp['NIP']).replace(/[`']/g, '') : '',
     emp['Status'] || '',
     emp['kelas jabatan'] || '',
+    emp['OPD'] || '',
     emp['kehadiran'] || 0,
     emp['DL/Ijin/Cuti'] || 0,
     emp['alpha'] || 0,
@@ -266,7 +266,7 @@ export const exportTopSekretariat = (sekretariatData) => {
   }
 
   const colWidths = [
-    { wch: 10 }, { wch: 35 }, { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 15 },
+    { wch: 10 }, { wch: 35 }, { wch: 20 }, { wch: 15 }, { wch: 20 }, { wch: 35 }, { wch: 15 },
     { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 10 }, { wch: 10 },
     { wch: 12 }, { wch: 12 }, { wch: 15 }
   ];
